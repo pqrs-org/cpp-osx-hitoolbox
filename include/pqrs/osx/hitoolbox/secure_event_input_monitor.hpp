@@ -20,7 +20,7 @@ public:
   // Signals (invoked from the dispatcher thread)
   //
 
-  nod::signal<void(bool)> secure_event_input_status_changed;
+  nod::signal<void(bool)> secure_event_input_enabled_changed;
 
   //
   // Methods
@@ -33,7 +33,7 @@ public:
       : dispatcher_client(weak_dispatcher),
         check_interval_(check_interval),
         timer_(*this),
-        status_(IsSecureEventInputEnabled()) {
+        secure_event_input_enabled_(IsSecureEventInputEnabled()) {
   }
 
   virtual ~secure_event_input_monitor(void) {
@@ -46,11 +46,11 @@ public:
     enqueue_to_dispatcher([this] {
       timer_.start(
           [this] {
-            bool s = IsSecureEventInputEnabled();
-            if (status_ != s) {
-              status_ = s;
+            bool enabled = IsSecureEventInputEnabled();
+            if (secure_event_input_enabled_ != enabled) {
+              secure_event_input_enabled_ = enabled;
               enqueue_to_dispatcher([this] {
-                secure_event_input_status_changed(status_);
+                secure_event_input_enabled_changed(secure_event_input_enabled_);
               });
             }
           },
@@ -71,7 +71,7 @@ private:
 
   std::chrono::milliseconds check_interval_;
   pqrs::dispatcher::extra::timer timer_;
-  bool status_;
+  bool secure_event_input_enabled_;
 };
 
 } // namespace hitoolbox

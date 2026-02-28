@@ -16,8 +16,8 @@ int main(void) {
 
   auto monitor = std::make_shared<pqrs::osx::hitoolbox::secure_event_input_monitor>(dispatcher);
 
-  monitor->secure_event_input_status_changed.connect([](auto&& enabled) {
-    std::cout << "secure_event_input_status_changed enabled: " << enabled << std::endl;
+  monitor->secure_event_input_enabled_changed.connect([](auto&& enabled) {
+    std::cout << "secure_event_input_enabled_changed enabled: " << enabled << std::endl;
   });
 
   monitor->async_start();
