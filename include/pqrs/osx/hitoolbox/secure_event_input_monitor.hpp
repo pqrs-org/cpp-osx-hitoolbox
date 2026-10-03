@@ -37,9 +37,7 @@ public:
   secure_event_input_monitor(std::weak_ptr<dispatcher::dispatcher> weak_dispatcher,
                              std::chrono::milliseconds check_interval = std::chrono::milliseconds(200))
       : dispatcher_client(std::move(weak_dispatcher)),
-        check_interval_(check_interval),
-        secure_event_input_enabled_(IsSecureEventInputEnabled()),
-        timer_(*this) {
+        check_interval_(check_interval) {
     dispatcher_client_constructor_exception_guard_.initialize();
   }
 
@@ -75,9 +73,11 @@ private:
   }
 
   const std::chrono::milliseconds check_interval_;
-  bool secure_event_input_enabled_;
+
+  bool secure_event_input_enabled_{IsSecureEventInputEnabled() != 0};
+
   // Construct after potentially throwing members; destruction requires detach.
-  pqrs::dispatcher::extra::timer timer_;
+  pqrs::dispatcher::extra::timer timer_{*this};
 };
 
 } // namespace pqrs::osx::hitoolbox
